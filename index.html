@@ -73,6 +73,13 @@
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>This example shows how to get the output of isoband as a <em>list of lists</em> of matrices, and to simply plot it.</p>
+<p>We avoid</p>
+<ul>
+<li>creating redundant rectilinear vectors of <code>$x</code> and <code>$y</code>
+</li>
+<li>requirement to specify levels (we auto them)</li>
+<li>having to convert from iso type to sf to finish the job</li>
+</ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hypertidy/xisoband" class="external-link">xisoband</a></span><span class="op">)</span></span>
 <span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu">whatarelief</span><span class="fu">::</span><span class="fu">elevation</span><span class="op">(</span><span class="op">)</span></span>
@@ -90,6 +97,7 @@
 <p>The orientation is <em>raster-order</em>, which is used by the GDAL packages and <code><a href="https://rdrr.io/r/graphics/rasterImage.html" class="external-link">rasterImage()</a></code>. There is a plot method for <code>isoband,iso</code> objects.</p>
 <p>We otherwise would get an unuseable list of grouped <code>x,y,id</code> lists from <code><a href="https://isoband.r-lib.org/reference/isobands.html" class="external-link">isoband::isobands()</a></code>, or a list of <code>sfg</code> geometries (matrices in a list with a class for sf) with <code>iso_to_sfg()</code> that further processes the <code>isobands()</code> output .</p>
 <p>The plot method uses <code><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">graphics::lines()</a></code> currently, but could use the vectorized grid package plotting. It seems funny that isoband currently returns an output that requires further clean up, <em>and</em> converts to sf.</p>
+<p>If <code>extent</code> is not provided we treat the matrix as living in <code>0:ncol,0:nrow</code> space.</p>
 <p>We might contribute changes to isoband to clean this up, but first I needed to be able to explore what’s already there.</p>
 <p>A rough set of goals:</p>
 <ul class="task-list">
@@ -101,7 +109,34 @@
 <input type="checkbox" disabled>separate the conversion to sf</li>
 <li>
 <input type="checkbox" disabled>put the geometry clean up deeper in the code, why do we want the raw <code>isobands()</code> output?, for example</li>
+<li>
+<input type="checkbox" disabled>record the grid attirbutes (dimension and extent) on the output</li>
+<li>
+<input type="checkbox" disabled>record the auto generated hi/lo levels</li>
 </ul>
+<p>A simpler example, this shows the simplicity of not requiring even extent as input, we simply assume the data lives in grid space, and we have a convenient way to choose just one level (or none, but choosing here gives a good result).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/xisobands.html">xisobands</a></span><span class="op">(</span><span class="va">m</span>, lo <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 5 5</span></span>
+<span><span class="co">#&gt; $`0.5:1`</span></span>
+<span><span class="co">#&gt; $`0.5:1`$x</span></span>
+<span><span class="co">#&gt;  [1] 0.5 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 4.5 4.5 4.0 3.5 3.0 2.5 2.0 1.5 1.0</span></span>
+<span><span class="co">#&gt; [20] 0.5 2.5 2.5 2.5 2.5 3.5 3.5 3.5 3.5 1.5 1.5 1.5 1.5</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $`0.5:1`$y</span></span>
+<span><span class="co">#&gt;  [1] 4.5 4.0 3.5 3.0 2.5 2.0 1.5 1.0 0.5 0.5 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5</span></span>
+<span><span class="co">#&gt; [20] 4.5 2.5 2.5 2.5 2.5 1.5 1.5 1.5 1.5 3.5 3.5 3.5 3.5</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $`0.5:1`$id</span></span>
+<span><span class="co">#&gt;  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attr(,"class")</span></span>
+<span><span class="co">#&gt; [1] "isobands" "iso"</span></span>
+<span><span class="fu">ximage</span><span class="fu">::</span><span class="fu">ximage</span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-simple-1.png" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
