@@ -10,7 +10,10 @@ extent_iso <- function(x) {
 
 #' Title
 #'
-#' @inheritParams graphics::plot
+#' @param x isobands iso object (from [isoband::isobands])
+#' @param add add to plot or create new one
+#' @param asp aspect ratio
+#' @param ... pass arguments to [graphics::lines()]
 #'
 #' @return nothing, used for side effect (a plot)
 #' @export
@@ -52,21 +55,10 @@ plot.iso <- function(x, ..., asp = "", add = FALSE) {
 #'
 #' @return and isobands, iso object
 #' @export
-#'
+#' @importFrom stats quantile
+#' @importFrom graphics lines plot.new plot.window
 #' @examples
-#' x <- 1:10
-#' y <- 1:5
-#' m <- t(volcano[1:10, 1:5])
-#' #isobands(x, y, m, 101, 106)
-#' i <- 2
-#' ## both cases return empty results
-#' isobands(x[i], y, m[, i, drop = FALSE], 101, 106)
-#' isobands(x, y[i], m[i, , drop = FALSE], 101, 106)
-#'
-#' m <- volcano
-#' levs <- quantile(m, na.rm = TRUE, probs = seq(0, 1, length.out = 12))
-#' x <- xisobands(m, head(levs, -1), tail(levs, - 1))
-#' plot(x)
+#' xisobands(diag(10))
 xisobands <- function(x, extent = NULL, lo = NULL, hi = NULL, nlevs = 12L) {
  x <- t(x[nrow(x):1, ])
   dimension <- dim(x)

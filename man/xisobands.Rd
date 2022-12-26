@@ -33,17 +33,5 @@ Values for lor and/or hi may be provided or left out. If both are left out can u
 nlevs to get a quantile set of levels from the data.
 }
 \examples{
-x <- 1:10
-y <- 1:5
-m <- t(volcano[1:10, 1:5])
-#isobands(x, y, m, 101, 106)
-i <- 2
-## both cases return empty results
-isobands(x[i], y, m[, i, drop = FALSE], 101, 106)
-isobands(x, y[i], m[i, , drop = FALSE], 101, 106)
-
-m <- volcano
-levs <- quantile(m, na.rm = TRUE, probs = seq(0, 1, length.out = 12))
-x <- xisobands(m, head(levs, -1), tail(levs, - 1))
-plot(x)
+xisobands(diag(10))
 }

@@ -7,10 +7,13 @@
 \method{plot}{iso}(x, ..., asp = "", add = FALSE)
 }
 \arguments{
-\item{...}{other \link[graphics]{graphical parameters} (see \code{\link[graphics]{par}} and
-    section \sQuote{Details} below).}
+\item{x}{isobands iso object (from \link[isoband:isobands]{isoband::isobands})}
 
-\item{asp}{the \eqn{y/x} aspect ratio, see \code{\link[graphics]{plot.window}}.}
+\item{...}{pass arguments to \code{\link[graphics:lines]{graphics::lines()}}}
+
+\item{asp}{aspect ratio}
+
+\item{add}{add to plot or create new one}
 }
 \value{
 nothing, used for side effect (a plot)
