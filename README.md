@@ -15,6 +15,12 @@ The goal of xisoband is to make isoband a bit more generally useable.
 This example shows how to get the output of isoband as a *list of lists*
 of matrices, and to simply plot it.
 
+We avoid
+
+-   creating redundant rectilinear vectors of `$x` and `$y`
+-   requirement to specify levels (we auto them)
+-   having to convert from iso type to sf to finish the job
+
 ``` r
 library(xisoband)
 e <- whatarelief::elevation()
@@ -51,6 +57,9 @@ The plot method uses `graphics::lines()` currently, but could use the
 vectorized grid package plotting. It seems funny that isoband currently
 returns an output that requires further clean up, *and* converts to sf.
 
+If `extent` is not provided we treat the matrix as living in
+`0:ncol,0:nrow` space.
+
 We might contribute changes to isoband to clean this up, but first I
 needed to be able to explore what’s already there.
 
@@ -62,6 +71,38 @@ A rough set of goals:
 -   [ ] separate the conversion to sf
 -   [ ] put the geometry clean up deeper in the code, why do we want the
     raw `isobands()` output?, for example
+-   [ ] record the grid attirbutes (dimension and extent) on the output
+-   [ ] record the auto generated hi/lo levels
+
+A simpler example, this shows the simplicity of not requiring even
+extent as input, we simply assume the data lives in grid space, and we
+have a convenient way to choose just one level (or none, but choosing
+here gives a good result).
+
+``` r
+m <- diag(5)
+(x <- xisobands(m, lo = .5))
+#> [1] 5 5
+#> $`0.5:1`
+#> $`0.5:1`$x
+#>  [1] 0.5 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 4.5 4.5 4.0 3.5 3.0 2.5 2.0 1.5 1.0
+#> [20] 0.5 2.5 2.5 2.5 2.5 3.5 3.5 3.5 3.5 1.5 1.5 1.5 1.5
+#> 
+#> $`0.5:1`$y
+#>  [1] 4.5 4.0 3.5 3.0 2.5 2.0 1.5 1.0 0.5 0.5 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+#> [20] 4.5 2.5 2.5 2.5 2.5 1.5 1.5 1.5 1.5 3.5 3.5 3.5 3.5
+#> 
+#> $`0.5:1`$id
+#>  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4
+#> 
+#> 
+#> attr(,"class")
+#> [1] "isobands" "iso"
+ximage::ximage(m)
+plot(x, add = TRUE)
+```
+
+<img src="man/figures/README-simple-1.png" width="100%" />
 
 ## Code of Conduct
 
