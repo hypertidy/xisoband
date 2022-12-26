@@ -12,3 +12,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports: 
     isoband
+URL: https://github.com/hypertidy/xisoband
+BugReports: https://github.com/hypertidy/xisoband/issues
