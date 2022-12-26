@@ -12,7 +12,8 @@ The goal of xisoband is to make isoband a bit more generally useable.
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This example shows how to get the output of isoband as a *list of lists*
+of matrices, and to simply plot it.
 
 ``` r
 library(xisoband)
@@ -32,6 +33,35 @@ plot(iso, add = TRUE)
 ```
 
 <img src="man/figures/README-example-2.png" width="100%" />
+
+We are using the hypertidy raster reader `elevation()` to get GEBCO 2021
+elevation in a matrix, and ximage to plot it. The ‘hypertidy way’ is to
+specify `extent` directly when it is required, not a mix of xmin,xmax or
+xlim,ylim, or the degenerate rectlinear model used by `image()`.
+
+The orientation is *raster-order*, which is used by the GDAL packages
+and `rasterImage()`. There is a plot method for `isoband,iso` objects.
+
+We otherwise would get an unuseable list of grouped `x,y,id` lists from
+`isoband::isobands()`, or a list of `sfg` geometries (matrices in a list
+with a class for sf) with `iso_to_sfg()` that further processes the
+`isobands()` output .
+
+The plot method uses `graphics::lines()` currently, but could use the
+vectorized grid package plotting. It seems funny that isoband currently
+returns an output that requires further clean up, *and* converts to sf.
+
+We might contribute changes to isoband to clean this up, but first I
+needed to be able to explore what’s already there.
+
+A rough set of goals:
+
+-   [ ] add vectorized `grid` package plotting
+-   [ ] separate the raw `isobands()` output from the cleaned up version
+    (in the same format)
+-   [ ] separate the conversion to sf
+-   [ ] put the geometry clean up deeper in the code, why do we want the
+    raw `isobands()` output?, for example
 
 ## Code of Conduct
 
